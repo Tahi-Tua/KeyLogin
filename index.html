@@ -280,7 +280,10 @@
                         return;
                     }
                     if (expiryTs < Date.now()) {
-                        showNotification('La clé a expiré.', 'error');
+                        showNotification('La clé a expiré. Retour à la page de validation.', 'error');
+                        setTimeout(() => {
+                            window.location.reload(); // Recharger index.html
+                        }, 2000); // Délai pour afficher la notification
                         return;
                     }
                 }
