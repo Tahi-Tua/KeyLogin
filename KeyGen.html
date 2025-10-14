@@ -299,7 +299,7 @@
       </div>
     </div>
 
-    <p style="margin-top:10px; color:var(--muted); font-size:13px">Astuce: choisissez <strong>UUID v4</strong> pour des identifiants uniques standardisés. Choisissez <strong>Hex</strong> pour des clés basées sur des octets aléatoires. Définit la durée de validité locale pour chaque clé (client uniquement).</p>
+    <p style="margin-top:10px; color:var(--muted); font-size:13px">Astuce: choisissez <strong>UUID v4</strong> pour des identifiants uniques standardisés. Choisissez <strong>Hex</strong> pour des clés basées sur des octets aléatoires. Définit la durée de validité locale pour chaque clé (client uniquement). Les clés sont maintenant encodées en base64 pour inclure la durée de validité automatiquement.</p>
   </div>
 
   <div class="notification" id="notification"></div>
@@ -387,7 +387,7 @@
 
       function clearOutput(){ output.innerHTML = ''; }
 
-      function appendKeyLine(text, expiryTs){
+      function appendKeyLine(encodedText, rawKey, expiryTs){
         const div = document.createElement('div');
         div.className = 'key';
 
@@ -397,7 +397,7 @@
         left.style.gap = '12px';
 
         const span = document.createElement('code');
-        span.textContent = text;
+        span.textContent = encodedText;
         left.appendChild(span);
 
         const meta = document.createElement('div');
@@ -422,7 +422,7 @@
         copyBtn.textContent = 'Copier';
         copyBtn.addEventListener('click', async ()=>{
           try {
-            await navigator.clipboard.writeText(text);
+            await navigator.clipboard.writeText(encodedText);
             copyBtn.textContent='✓';
             showNotification('Clé copiée !', 'success');
           } catch(e) {
@@ -437,6 +437,7 @@
         div.appendChild(meta);
         div.appendChild(right);
         if(expiryTs) div.dataset.expiry = expiryTs;
+        div.dataset.rawKey = rawKey; // Pour download
         output.appendChild(div);
       }
 
@@ -486,15 +487,18 @@
         const now = Date.now();
 
         for(let i=0;i<n;i++){
-          let key = '';
-          if(selectedMode==='uuid'){ key=uuidv4(); }
-          else if(selectedMode==='hex'){ key=hexKey(Math.ceil((Number(lengthInput.value)||32)/2)).slice(0,Number(lengthInput.value)||32); }
+          let rawKey = '';
+          if(selectedMode==='uuid'){ rawKey=uuidv4(); }
+          else if(selectedMode==='hex'){ rawKey=hexKey(Math.ceil((Number(lengthInput.value)||32)/2)).slice(0,Number(lengthInput.value)||32); }
           else{
             const cs = buildCharset({upper:upper.checked, lower:lower.checked, digits:digits.checked, symbols:symbols.checked, noAmbig:noAmbig.checked});
-            key = formatGroups(randomFromCharset(Number(lengthInput.value)||25, cs), Number(group.value)||0);
+            rawKey = formatGroups(randomFromCharset(Number(lengthInput.value)||25, cs), Number(group.value)||0);
           }
-          const expiryTs = ttlMs ? now+ttlMs : null;
-          appendKeyLine(pref+key, expiryTs);
+          const fullRawKey = pref + rawKey;
+          const expiryTs = ttlMs ? now + ttlMs : null;
+          const data = {key: fullRawKey, expiry: expiryTs};
+          const encodedKey = btoa(JSON.stringify(data));
+          appendKeyLine(encodedKey, fullRawKey, expiryTs);
         }
         updateCountdowns();
         setInterval(updateCountdowns,1000);
@@ -518,7 +522,7 @@
 
       downloadBtn.addEventListener('click', ()=>{
         const rows = Array.from(output.querySelectorAll('.key'));
-        const texts = rows.map(r=>r.querySelector('code').textContent + (r.dataset.expiry ? ' | expire le ' + new Date(Number(r.dataset.expiry)).toLocaleString() : ' | illimité')).join('\n');
+        const texts = rows.map(r=>r.querySelector('code').textContent + ' | clé brute: ' + r.dataset.rawKey + (r.dataset.expiry ? ' | expire le ' + new Date(Number(r.dataset.expiry)).toLocaleString() : ' | illimité')).join('\n');
         const blob = new Blob([texts], {type:'text/plain;charset=utf-8'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
