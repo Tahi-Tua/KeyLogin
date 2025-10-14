@@ -145,11 +145,7 @@
             <div class="row">
                 <div style="flex:1">
                     <label for="keyInput">Collez votre clé</label>
-                    <input id="keyInput" type="text" placeholder="ex: PRO-XXXX-XXXX-XXXX-XXXX">
-                </div>
-                <div style="width:140px">
-                    <label for="expiryInput">Expiration (optionnel)</label>
-                    <input id="expiryInput" type="text" placeholder="ex: 2025-10-14 04:45:00">
+                    <input id="keyInput" type="text" placeholder="ex: eyJrZXkiOiJQUk8tQUJDRC1FRkdILUlKS0wtTU5PUCIsImV4cGlyeSI6bnVsbH0=">
                 </div>
             </div>
             <div style="margin-top:12px">
@@ -169,7 +165,6 @@
 
             const el = id => document.getElementById(id);
             const keyInput = el('keyInput');
-            const expiryInput = el('expiryInput');
             const validateBtn = el('validateBtn');
             const notification = el('notification');
 
@@ -182,12 +177,23 @@
             }
 
             function validateKey() {
-                const key = keyInput.value.trim();
-                const expiry = expiryInput.value.trim();
-                if (!key) {
+                const encodedKey = keyInput.value.trim();
+                if (!encodedKey) {
                     showNotification('Veuillez entrer une clé.', 'error');
                     return;
                 }
+
+                let data;
+                try {
+                    data = JSON.parse(atob(encodedKey));
+                    if (!data.key) throw new Error('Invalid data');
+                } catch (e) {
+                    showNotification('Clé invalide : format encodé incorrect.', 'error');
+                    return;
+                }
+
+                const cleanKey = data.key;
+                const expiryTs = data.expiry;
 
                 // Patterns pour valider les différents formats de clés
                 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -196,21 +202,21 @@
 
                 // Extraire le préfixe (si présent) et la clé
                 let prefix = '';
-                let cleanKey = key;
-                const prefixMatch = key.match(/^([A-Z0-9-]*-)?(.*)$/);
+                let rawKey = cleanKey;
+                const prefixMatch = cleanKey.match(/^([A-Z0-9-]*-)?(.*)$/);
                 if (prefixMatch) {
                     prefix = prefixMatch[1] || '';
-                    cleanKey = prefixMatch[2];
+                    rawKey = prefixMatch[2];
                 }
 
                 // Validation du format de la clé
                 let isValid = false;
-                if (uuidPattern.test(cleanKey)) {
+                if (uuidPattern.test(rawKey)) {
                     isValid = true; // UUID v4
-                } else if (hexPattern.test(cleanKey)) {
-                    isValid = cleanKey.length >= 4 && cleanKey.length <= 128; // Hex
-                } else if (randomPattern.test(cleanKey)) {
-                    isValid = cleanKey.replace(/-/g, '').length >= 4 && cleanKey.replace(/-/g, '').length <= 128; // Random
+                } else if (hexPattern.test(rawKey)) {
+                    isValid = rawKey.length >= 4 && rawKey.length <= 128; // Hex
+                } else if (randomPattern.test(rawKey)) {
+                    isValid = rawKey.replace(/-/g, '').length >= 4 && rawKey.replace(/-/g, '').length <= 128; // Random
                 }
 
                 if (!isValid) {
@@ -218,21 +224,21 @@
                     return;
                 }
 
-                // Validation de l'expiration (si fournie)
-                if (expiry) {
-                    const expiryDate = new Date(expiry);
-                    if (isNaN(expiryDate.getTime())) {
+                // Validation de l'expiration
+                if (expiryTs !== null) {
+                    if (typeof expiryTs !== 'number' || isNaN(expiryTs)) {
                         showNotification('Date d’expiration invalide.', 'error');
                         return;
                     }
-                    if (expiryDate < new Date()) {
+                    if (expiryTs < Date.now()) {
                         showNotification('La clé a expiré.', 'error');
                         return;
                     }
                 }
 
                 // Si tout est valide
-                showNotification('Clé valide ! Accès autorisé.', 'success');
+                const expiryMsg = expiryTs ? ` (valide jusqu'au ${new Date(expiryTs).toLocaleString()})` : ' (illimitée)';
+                showNotification(`Clé valide ! Accès autorisé${expiryMsg}.`, 'success');
                 // Optionnel : rediriger vers une page ou débloquer du contenu
                 // window.location.href = 'contenu_protege.html';
             }
