@@ -148,7 +148,8 @@
   <div class="container">
     <div class="card">
       <h1>Vérification de clé</h1>
-      <label for="keyInput">Collez votre clé ici :</label>
+  <label for="keyInput">Collez votre clé ici :</label>
+  <div id="infoKey" class="small" style="margin-bottom:10px;display:none;color:var(--accent2)"></div>
   <input type="text" id="keyInput" placeholder="Collez la clé générée..." autocomplete="off" spellcheck="false">
   <button id="pasteBtn" type="button">Coller la clé</button>
   <button id="validateBtn">Valider la clé</button>
@@ -170,6 +171,25 @@
   const validateBtn = el('validateBtn');
   const result = el('result');
   const notification = el('notification');
+      // Lecture du paramètre 'key' dans l'URL
+      function getKeyFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('key') || '';
+      }
+
+      const infoKey = el('infoKey');
+      const urlKey = getKeyFromUrl();
+      if (urlKey && urlKey.length >= 8) {
+        keyInput.value = urlKey;
+        result.style.display = 'none';
+        infoKey.textContent = 'Clé préremplie depuis KeyGen.html.';
+        infoKey.style.display = 'block';
+        showNotification('Clé préremplie depuis KeyGen.html', 'success');
+      } else {
+        infoKey.textContent = 'Vous pouvez copier/coller ou utiliser le bouton Coller la clé.';
+        infoKey.style.display = 'block';
+      }
+
       // Coller la clé depuis le presse-papiers
       if (pasteBtn) {
         if (!navigator.clipboard || !navigator.clipboard.readText) {
