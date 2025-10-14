@@ -19,7 +19,13 @@
             --success: #22c55e;
             --shadow: 0 6px 30px rgba(2,6,23,0.6);
         }
-        * { box-sizing: border-box; }
+        * { 
+            box-sizing: border-box; 
+            user-select: none; /* Désactiver la sélection de texte */
+            -webkit-user-select: none; /* Pour Safari */
+            -moz-user-select: none; /* Pour Firefox */
+            -ms-user-select: none; /* Pour Edge */
+        }
         body {
             font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
             margin: 0;
@@ -30,7 +36,6 @@
             align-items: center;
             justify-content: center;
             padding: 24px;
-            user-select: none;
         }
         .container {
             width: 100%;
@@ -162,6 +167,50 @@
                 e.preventDefault();
                 showNotification('Action désactivée : clic droit interdit.', 'error');
             });
+
+            // Bloquer les raccourcis pour les outils de développement
+            document.addEventListener('keydown', function (e) {
+                if (
+                    e.key === 'F12' ||
+                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                    (e.ctrlKey && e.key === 'u')
+                ) {
+                    e.preventDefault();
+                    showNotification('Accès aux outils de développement interdit.', 'error');
+                }
+            });
+
+            // Détection des outils de développement (approche approximative)
+            let devToolsOpen = false;
+            const threshold = 160; // Seuil pour détecter la fenêtre des outils
+            function checkDevTools() {
+                if (
+                    window.outerWidth - window.innerWidth > threshold ||
+                    window.outerHeight - window.innerHeight > threshold ||
+                    (window.console && console.log.toString().includes('native code') === false)
+                ) {
+                    if (!devToolsOpen) {
+                        devToolsOpen = true;
+                        showNotification('Outils de développement détectés. Accès interdit.', 'error');
+                        setTimeout(() => {
+                            window.location.reload(); // Recharger la page pour dissuader
+                        }, 2000);
+                    }
+                }
+            }
+            setInterval(checkDevTools, 1000);
+
+            // Limiter les rechargements fréquents
+            let lastLoadTime = localStorage.getItem('lastLoadTime') || 0;
+            const currentTime = Date.now();
+            if (currentTime - lastLoadTime < 2000) { // 2 secondes
+                showNotification('Trop de rechargements détectés. Veuillez patienter.', 'error');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                localStorage.setItem('lastLoadTime', currentTime);
+            }
 
             const el = id => document.getElementById(id);
             const keyInput = el('keyInput');
