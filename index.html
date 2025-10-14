@@ -1,283 +1,251 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Vérification de clé — index.html</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0f1724;
-      --card: #0b1220;
-      --accent: #06b6d4;
-      --accent2: #38bdf8;
-      --muted: #9aa4b2;
-      --white: #e6eef6;
-      --error: #ef4444;
-      --success: #22c55e;
-      --shadow: 0 6px 30px rgba(2,6,23,0.6);
-    }
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      margin: 0;
-      background: linear-gradient(180deg,#071226 0%, #071b2a 100%);
-      color: var(--white);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      transition: background 0.3s;
-      user-select: none;
-    }
-    .container {
-      width: 100%;
-      max-width: 420px;
-      animation: fadein 0.7s;
-    }
-    @keyframes fadein {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: none; }
-    }
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-      padding: 22px;
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(6,182,212,0.08);
-      transition: box-shadow 0.2s;
-    }
-    .card:hover {
-      box-shadow: 0 12px 40px rgba(6,182,212,0.18);
-    }
-    h1 {
-      font-size: 22px;
-      margin: 0 0 18px 0;
-      font-weight: 700;
-      color: var(--accent2);
-      text-shadow: 0 2px 8px rgba(6,182,212,0.12);
-    }
-    label {
-      font-size: 14px;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.02);
-      color: var(--white);
-      font-size: 16px;
-      font-family: 'Roboto Mono', monospace;
-      transition: border 0.2s, box-shadow 0.2s;
-      margin-bottom: 14px;
-    }
-    input:focus {
-      outline: none;
-      border-color: var(--accent2);
-      box-shadow: 0 0 0 2px rgba(56,189,248,0.15);
-    }
-    button {
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      border: 0;
-      color: #042028;
-      padding: 11px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 15px;
-      box-shadow: 0 2px 8px rgba(6,182,212,0.08);
-      transition: background 0.2s, box-shadow 0.2s;
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      margin-bottom: 10px;
-    }
-    button:active {
-      box-shadow: 0 1px 4px rgba(6,182,212,0.18);
-    }
-    .result {
-      margin-top: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      padding: 12px 0;
-      text-align: center;
-      border-radius: 8px;
-      transition: background 0.2s;
-    }
-    .result.success { background: rgba(34,197,94,0.12); color: var(--success); }
-    .result.error { background: rgba(239,68,68,0.12); color: var(--error); }
-    .notification {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      background: var(--card);
-      color: var(--white);
-      padding: 14px 22px;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      font-size: 15px;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s, transform 0.3s;
-    }
-    .notification.show {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0);
-    }
-    .notification.error { background: var(--error); color: #fff; }
-    .notification.success { background: var(--success); color: #fff; }
-    @media(max-width:600px) {
-      .container { max-width: 100vw; padding: 0; }
-      .card { border-radius: 0; padding: 12px; }
-      h1 { font-size: 18px; }
-      .result { font-size: 14px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation de Clé</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1724;
+            --card: #0b1220;
+            --accent: #06b6d4;
+            --accent2: #38bdf8;
+            --muted: #9aa4b2;
+            --white: #e6eef6;
+            --error: #ef4444;
+            --success: #22c55e;
+            --shadow: 0 6px 30px rgba(2,6,23,0.6);
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            margin: 0;
+            background: linear-gradient(180deg, #071226 0%, #071b2a 100%);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            user-select: none;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            animation: fadein 0.7s;
+        }
+        @keyframes fadein {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: none; }
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--accent2);
+            text-shadow: 0 2px 8px rgba(6,182,212,0.12);
+        }
+        .card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            padding: 22px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(6,182,212,0.08);
+            transition: box-shadow 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 12px 40px rgba(6,182,212,0.18);
+        }
+        label {
+            font-size: 14px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.02);
+            color: var(--white);
+            font-size: 15px;
+            font-family: inherit;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--accent2);
+            box-shadow: 0 0 0 2px rgba(56,189,248,0.15);
+        }
+        button {
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border: 0;
+            color: #042028;
+            padding: 11px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 2px 8px rgba(6,182,212,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        button:active {
+            box-shadow: 0 1px 4px rgba(6,182,212,0.18);
+        }
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: var(--card);
+            color: var(--white);
+            padding: 14px 22px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            font-size: 15px;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .notification.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .notification.error { background: var(--error); color: #fff; }
+        .notification.success { background: var(--success); color: #fff; }
+        .row { display: flex; gap: 14px; align-items: end; }
+        @media(max-width:600px) {
+            .container { padding: 0; }
+            .card { border-radius: 0; }
+            h1 { font-size: 18px; }
+            .row { flex-direction: column; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <h1>Vérification de clé</h1>
-  <label for="keyInput">Collez votre clé ici :</label>
-  <div id="infoKey" class="small" style="margin-bottom:10px;display:none;color:var(--accent2)"></div>
-  <input type="text" id="keyInput" placeholder="Collez la clé générée..." autocomplete="off" spellcheck="false">
-  <button id="pasteBtn" type="button">Coller la clé</button>
-  <button id="validateBtn">Valider la clé</button>
-      <div id="result" class="result" style="display:none"></div>
+    <div class="container">
+        <header>
+            <h1>Validation de Clé</h1>
+            <div class="small">Fichier: <strong>index.html</strong></div>
+        </header>
+        <div class="card">
+            <div class="row">
+                <div style="flex:1">
+                    <label for="keyInput">Collez votre clé</label>
+                    <input id="keyInput" type="text" placeholder="ex: PRO-XXXX-XXXX-XXXX-XXXX">
+                </div>
+                <div style="width:140px">
+                    <label for="expiryInput">Expiration (optionnel)</label>
+                    <input id="expiryInput" type="text" placeholder="ex: 2025-10-14 04:45:00">
+                </div>
+            </div>
+            <div style="margin-top:12px">
+                <button id="validateBtn">Valider la clé</button>
+            </div>
+        </div>
+        <div class="notification" id="notification"></div>
     </div>
-  </div>
-  <div class="notification" id="notification"></div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Anti-clic droit
-      document.addEventListener('contextmenu', function(e){
-        e.preventDefault();
-        showNotification('Action désactivée : clic droit interdit.', 'error');
-      });
 
-      const el = id => document.getElementById(id);
-  const keyInput = el('keyInput');
-  const pasteBtn = el('pasteBtn');
-  const validateBtn = el('validateBtn');
-  const result = el('result');
-  const notification = el('notification');
-      // Lecture du paramètre 'key' dans l'URL
-      function getKeyFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('key') || '';
-      }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Anti-clic droit
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+                showNotification('Action désactivée : clic droit interdit.', 'error');
+            });
 
-      const infoKey = el('infoKey');
-      const urlKey = getKeyFromUrl();
-      if (urlKey && urlKey.length >= 8) {
-        keyInput.value = urlKey;
-        result.style.display = 'none';
-        infoKey.textContent = 'Clé préremplie depuis KeyGen.html.';
-        infoKey.style.display = 'block';
-        showNotification('Clé préremplie depuis KeyGen.html', 'success');
-      } else {
-        infoKey.textContent = 'Vous pouvez copier/coller ou utiliser le bouton Coller la clé.';
-        infoKey.style.display = 'block';
-      }
+            const el = id => document.getElementById(id);
+            const keyInput = el('keyInput');
+            const expiryInput = el('expiryInput');
+            const validateBtn = el('validateBtn');
+            const notification = el('notification');
 
-      // Coller la clé depuis le presse-papiers
-      if (pasteBtn) {
-        if (!navigator.clipboard || !navigator.clipboard.readText) {
-          pasteBtn.disabled = true;
-          pasteBtn.style.opacity = '0.5';
-          pasteBtn.style.cursor = 'not-allowed';
-          showNotification('API presse-papiers non disponible. Ouvrez la page via un serveur local ou HTTPS.', 'error', 4000);
-        } else {
-          pasteBtn.addEventListener('click', async () => {
-            try {
-              const text = await navigator.clipboard.readText();
-              if (text && text.length >= 8) {
-                keyInput.value = text;
-                result.style.display = 'none';
-                showNotification('Clé collée !', 'success');
-              } else {
-                showNotification('Aucune clé valide trouvée dans le presse-papiers.', 'error');
-              }
-            } catch (e) {
-              showNotification('Impossible d\'accéder au presse-papiers.', 'error');
+            function showNotification(msg, type = 'success', duration = 1800) {
+                notification.textContent = msg;
+                notification.className = 'notification show ' + type;
+                setTimeout(() => {
+                    notification.className = 'notification';
+                }, duration);
             }
-          });
-        }
-      }
 
-      // Optionnel : préremplir au chargement si une clé est dans le presse-papiers
-      /*
-      setTimeout(async () => {
-        try {
-          const text = await navigator.clipboard.readText();
-          if (text && text.length >= 8) {
-            keyInput.value = text;
-            result.style.display = 'none';
-            showNotification('Clé détectée et collée automatiquement.', 'success');
-          }
-        } catch {}
-      }, 500);
-      */
+            function validateKey() {
+                const key = keyInput.value.trim();
+                const expiry = expiryInput.value.trim();
+                if (!key) {
+                    showNotification('Veuillez entrer une clé.', 'error');
+                    return;
+                }
 
-      function showNotification(msg, type='success', duration=1800) {
-        if (!notification) return;
-        notification.textContent = msg;
-        notification.className = 'notification show ' + type;
-        setTimeout(()=>{
-          notification.className = 'notification';
-        }, duration);
-      }
+                // Patterns pour valider les différents formats de clés
+                const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+                const hexPattern = /^[0-9a-f]+$/i;
+                const randomPattern = /^[A-Za-z0-9#@!-_]+(-[A-Za-z0-9#@!-_]+)*$/;
 
-      function isValidKey(key) {
-        // Validation simple : UUID v4 ou HEX ou custom (longueur >= 8, pas d'espace)
-        if (!key || key.length < 8 || /\s/.test(key)) return false;
-        // UUID v4
-        if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(key)) return true;
-        // HEX
-        if (/^[0-9a-fA-F]{16,128}$/.test(key)) return true;
-        // Custom (alphanum/symbols, min 8)
-        if (/^[A-Za-z0-9!@#$%^&*()\[\]{}<>?_-+=~]{8,}$/.test(key)) return true;
-        return false;
-      }
+                // Extraire le préfixe (si présent) et la clé
+                let prefix = '';
+                let cleanKey = key;
+                const prefixMatch = key.match(/^([A-Z0-9-]*-)?(.*)$/);
+                if (prefixMatch) {
+                    prefix = prefixMatch[1] || '';
+                    cleanKey = prefixMatch[2];
+                }
 
-      if (!keyInput || !validateBtn || !result) {
-        showNotification('Erreur : éléments manquants dans la page.', 'error', 3000);
-        return;
-      }
+                // Validation du format de la clé
+                let isValid = false;
+                if (uuidPattern.test(cleanKey)) {
+                    isValid = true; // UUID v4
+                } else if (hexPattern.test(cleanKey)) {
+                    isValid = cleanKey.length >= 4 && cleanKey.length <= 128; // Hex
+                } else if (randomPattern.test(cleanKey)) {
+                    isValid = cleanKey.replace(/-/g, '').length >= 4 && cleanKey.replace(/-/g, '').length <= 128; // Random
+                }
 
-      validateBtn.addEventListener('click', ()=>{
-        // Vérification de l'événement
-        if (!keyInput) {
-          showNotification('Erreur : champ clé introuvable.', 'error', 3000);
-          return;
-        }
-        const key = keyInput.value.trim();
-        if (isValidKey(key)) {
-          result.textContent = 'Clé valide !';
-          result.className = 'result success';
-          result.style.display = 'block';
-          showNotification('Clé acceptée.', 'success');
-        } else {
-          result.textContent = 'Clé invalide.';
-          result.className = 'result error';
-          result.style.display = 'block';
-          showNotification('Format de clé incorrect.', 'error');
-        }
-      });
-      keyInput.addEventListener('input', ()=>{
-        result.style.display = 'none';
-      });
-    });
-  </script>
+                if (!isValid) {
+                    showNotification('Clé invalide : format incorrect.', 'error');
+                    return;
+                }
+
+                // Validation de l'expiration (si fournie)
+                if (expiry) {
+                    const expiryDate = new Date(expiry);
+                    if (isNaN(expiryDate.getTime())) {
+                        showNotification('Date d’expiration invalide.', 'error');
+                        return;
+                    }
+                    if (expiryDate < new Date()) {
+                        showNotification('La clé a expiré.', 'error');
+                        return;
+                    }
+                }
+
+                // Si tout est valide
+                showNotification('Clé valide ! Accès autorisé.', 'success');
+                // Optionnel : rediriger vers une page ou débloquer du contenu
+                // window.location.href = 'contenu_protege.html';
+            }
+
+            validateBtn.addEventListener('click', validateKey);
+
+            // Validation en temps réel lors de la saisie
+            keyInput.addEventListener('input', () => {
+                if (!keyInput.value.trim()) {
+                    showNotification('Veuillez entrer une clé.', 'error');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
