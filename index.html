@@ -172,20 +172,27 @@
   const notification = el('notification');
       // Coller la clé depuis le presse-papiers
       if (pasteBtn) {
-        pasteBtn.addEventListener('click', async () => {
-          try {
-            const text = await navigator.clipboard.readText();
-            if (text && text.length >= 8) {
-              keyInput.value = text;
-              result.style.display = 'none';
-              showNotification('Clé collée !', 'success');
-            } else {
-              showNotification('Aucune clé valide trouvée dans le presse-papiers.', 'error');
+        if (!navigator.clipboard || !navigator.clipboard.readText) {
+          pasteBtn.disabled = true;
+          pasteBtn.style.opacity = '0.5';
+          pasteBtn.style.cursor = 'not-allowed';
+          showNotification('API presse-papiers non disponible. Ouvrez la page via un serveur local ou HTTPS.', 'error', 4000);
+        } else {
+          pasteBtn.addEventListener('click', async () => {
+            try {
+              const text = await navigator.clipboard.readText();
+              if (text && text.length >= 8) {
+                keyInput.value = text;
+                result.style.display = 'none';
+                showNotification('Clé collée !', 'success');
+              } else {
+                showNotification('Aucune clé valide trouvée dans le presse-papiers.', 'error');
+              }
+            } catch (e) {
+              showNotification('Impossible d\'accéder au presse-papiers.', 'error');
             }
-          } catch (e) {
-            showNotification('Impossible d\'accéder au presse-papiers.', 'error');
-          }
-        });
+          });
+        }
       }
 
       // Optionnel : préremplir au chargement si une clé est dans le presse-papiers
@@ -229,6 +236,11 @@
       }
 
       validateBtn.addEventListener('click', ()=>{
+        // Vérification de l'événement
+        if (!keyInput) {
+          showNotification('Erreur : champ clé introuvable.', 'error', 3000);
+          return;
+        }
         const key = keyInput.value.trim();
         if (isValidKey(key)) {
           result.textContent = 'Clé valide !';
