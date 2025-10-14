@@ -238,9 +238,11 @@
 
                 // Si tout est valide
                 const expiryMsg = expiryTs ? ` (valide jusqu'au ${new Date(expiryTs).toLocaleString()})` : ' (illimitée)';
-                showNotification(`Clé valide ! Accès autorisé${expiryMsg}.`, 'success');
-                // Optionnel : rediriger vers une page ou débloquer du contenu
-                // window.location.href = 'contenu_protege.html';
+                showNotification(`Clé valide ! Redirection en cours${expiryMsg}...`, 'success');
+                // Redirection vers la page spécifiée
+                setTimeout(() => {
+                    window.location.href = 'https://thtguns.glide.page';
+                }, 1000); // Délai d'une seconde pour laisser l'utilisateur voir la notification
             }
 
             validateBtn.addEventListener('click', validateKey);
