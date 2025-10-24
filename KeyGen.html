@@ -1,545 +1,161 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Générateur de clé — index.html</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0f1724;
-      --card: #0b1220;
-      --accent: #06b6d4;
-      --accent2: #38bdf8;
-      --muted: #9aa4b2;
-      --white: #e6eef6;
-      --error: #ef4444;
-      --success: #22c55e;
-      --shadow: 0 6px 30px rgba(2,6,23,0.6);
-    }
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      margin: 0;
-      background: linear-gradient(180deg,#071226 0%, #071b2a 100%);
-      color: var(--white);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      transition: background 0.3s;
-      user-select: none;
-    }
-    .container {
-      width: 100%;
-      max-width: 920px;
-      animation: fadein 0.7s;
-    }
-    @keyframes fadein {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: none; }
-    }
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
-    }
-    h1 {
-      font-size: 24px;
-      margin: 0;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: var(--accent2);
-      text-shadow: 0 2px 8px rgba(6,182,212,0.12);
-    }
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-      padding: 22px;
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(6,182,212,0.08);
-      transition: box-shadow 0.2s;
-    }
-    .card:hover {
-      box-shadow: 0 12px 40px rgba(6,182,212,0.18);
-    }
-    .grid { display: grid; gap: 16px; }
-    .controls { grid-template-columns: 1fr 280px; align-items: start; }
-    .row { display: flex; gap: 14px; }
-    label {
-      font-size: 14px;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    input[type="number"], select, input[type="text"] {
-      width: 100%;
-      padding: 11px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.02);
-      color: var(--white);
-      font-size: 15px;
-      font-family: inherit;
-      transition: border 0.2s, box-shadow 0.2s;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--accent2);
-      box-shadow: 0 0 0 2px rgba(56,189,248,0.15);
-    }
-    .checkboxes { display: flex; gap: 8px; flex-wrap: wrap; }
-    .checkboxes label {
-      display: flex; gap: 6px; align-items: center;
-      font-size: 13px; color: var(--muted);
-      font-weight: 500;
-    }
-    button {
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      border: 0;
-      color: #042028;
-      padding: 11px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 15px;
-      box-shadow: 0 2px 8px rgba(6,182,212,0.08);
-      transition: background 0.2s, box-shadow 0.2s;
-      position: relative;
-      z-index: 1;
-    }
-    button.ghost {
-      background: transparent;
-      border: 1px solid var(--accent2);
-      color: var(--white);
-      font-weight: 600;
-      box-shadow: none;
-    }
-    button:active {
-      box-shadow: 0 1px 4px rgba(6,182,212,0.18);
-    }
-    .output {
-      margin-top: 14px;
-      display: grid;
-      gap: 10px;
-    }
-    .key {
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.04);
-      font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(6,182,212,0.08);
-      transition: background 0.2s;
-      border: 1px solid rgba(6,182,212,0.08);
-    }
-    .key:hover {
-      background: rgba(56,189,248,0.08);
-    }
-    .meta {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 6px;
-      text-align: right;
-    }
-    .small {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 500;
-    }
-    .footer {
-      margin-top: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    a {
-      color: var(--accent2);
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .notification {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      background: var(--card);
-      color: var(--white);
-      padding: 14px 22px;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      font-size: 15px;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s, transform 0.3s;
-    }
-    .notification.show {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0);
-    }
-    .notification.error { background: var(--error); color: #fff; }
-    .notification.success { background: var(--success); color: #fff; }
-    @media(max-width:900px) {
-      .controls { grid-template-columns: 1fr; }
-      .meta { align-items: flex-start; text-align: left; }
-      .container { max-width: 100vw; }
-      .card { padding: 12px; }
-    }
-    @media(max-width:600px) {
-      .container { padding: 0; }
-      .card { border-radius: 0; }
-      h1 { font-size: 18px; }
-      .key { font-size: 13px; padding: 8px 6px; }
-      .footer { flex-direction: column; gap: 8px; }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KeyGen — Générateur de clés</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Générateur de clé</h1>
-    </header>
+  <main class="card" role="main">
+    <h1>KeyGen — Générateur de clés</h1>
+    <p class="lead">Générez, copiez et exportez des clés d'activation. Les clés sont stockées localement dans votre navigateur.</p>
 
-    <div class="card">
-      <div class="grid controls">
+    <section class="controls">
+      <label for="prefix">Préfixe (optionnel)</label>
+      <input id="prefix" placeholder="EX: TRD-" />
+
+      <div class="row">
         <div>
-          <div class="row">
-            <div style="flex:1">
-              <label for="mode">Mode</label>
-              <select id="mode">
-                <option value="random">Aléatoire (charset personnalisé)</option>
-                <option value="uuid">UUID v4 (standard)</option>
-                <option value="hex">Hex (bytes)</option>
-              </select>
-            </div>
-            <div style="width:140px">
-              <label for="count">Nombre</label>
-              <input id="count" type="number" min="1" max="200" value="5">
-            </div>
-          </div>
-
-          <div style="margin-top:12px" id="random-options">
-            <div class="row">
-              <div style="flex:1">
-                <label for="length">Longueur (par clé)</label>
-                <input id="length" type="number" min="4" max="128" value="25">
-              </div>
-              <div style="width:160px">
-                <label for="group">Séparateur</label>
-                <select id="group">
-                  <option value="0">Aucun</option>
-                  <option value="4">XXXX-XXXX</option>
-                  <option value="5">XXXXX-XXXXX</option>
-                </select>
-              </div>
-            </div>
-
-            <div style="margin-top:10px">
-              <label>Charset</label>
-              <div class="checkboxes">
-                <label><input type="checkbox" id="upper" checked> A–Z</label>
-                <label><input type="checkbox" id="lower" checked> a–z</label>
-                <label><input type="checkbox" id="digits" checked> 0–9</label>
-                <label><input type="checkbox" id="symbols"> #@!-_</label>
-                <label style="width:240px"><input type="checkbox" id="no-ambiguous"> Exclure caractères ambigus (0 O I l 1)</label>
-              </div>
-            </div>
-
-            <div style="margin-top:10px">
-              <label for="prefix">Préfixe (optionnel)</label>
-              <input id="prefix" type="text" placeholder="ex: PRO-">
-            </div>
-          </div>
-
-          <div style="margin-top:12px; display:flex; gap:8px; align-items:end">
-            <div style="display:flex; gap:8px; align-items:center">
-              <div style="width:110px">
-                <label for="ttl">Valide pendant</label>
-                <input id="ttl" type="number" min="0" value="0">
-              </div>
-              <div style="width:120px">
-                <label for="ttl-unit">Unité</label>
-                <select id="ttl-unit">
-                  <option value="minutes">Minutes</option>
-                  <option value="hours" selected>Heures</option>
-                  <option value="days">Jours</option>
-                  <option value="never">Jamais (illimité)</option>
-                </select>
-              </div>
-            </div>
-
-            <div style="display:flex; gap:8px">
-              <button id="generate">Générer</button>
-              <button id="copyAll" class="ghost">Copier tout</button>
-              <button id="download" class="ghost">Télécharger (.txt)</button>
-            </div>
-          </div>
+          <label for="partLength">Longueur d'une partie</label>
+          <input id="partLength" type="number" min="3" value="5" />
         </div>
-
         <div>
-          <label>Résultats</label>
-          <div class="output" id="output" aria-live="polite">
-            <!-- keys appear here -->
-          </div>
-          <div class="footer">
-            <div class="small">Sécurité: utilise <code>crypto.getRandomValues</code> côté client.</div>
-            <div class="small">Pas de serveur, tout reste local.</div>
-          </div>
+          <label for="parts">Nombre de parties</label>
+          <input id="parts" type="number" min="1" max="6" value="3" />
         </div>
       </div>
-    </div>
 
-    <p style="margin-top:10px; color:var(--muted); font-size:13px">Astuce: choisissez <strong>UUID v4</strong> pour des identifiants uniques standardisés. Choisissez <strong>Hex</strong> pour des clés basées sur des octets aléatoires. Définit la durée de validité locale pour chaque clé (client uniquement). Les clés sont maintenant encodées en base64 pour inclure la durée de validité automatiquement.</p>
-  </div>
+      <div class="row">
+        <div>
+          <label for="count">Nombre de clés</label>
+          <input id="count" type="number" min="1" max="500" value="5" />
+        </div>
+        <div>
+          <label for="charset">Type</label>
+          <select id="charset">
+            <option value="alnum">Alphanumérique (A-Z0-9)</option>
+            <option value="alpha">Lettres (A-Z)</option>
+            <option value="numeric">Chiffres (0-9)</option>
+            <option value="hex">Hexadécimal (0-9A-F)</option>
+          </select>
+        </div>
+      </div>
 
-  <div class="notification" id="notification"></div>
+      <div class="row">
+        <button id="generate" type="button">Générer</button>
+        <button id="clear" type="button">Effacer</button>
+        <button id="export" type="button">Exporter (.csv)</button>
+      </div>
+    </section>
+
+    <section id="list" class="list" aria-live="polite"></section>
+  </main>
+
   <script>
-    document.addEventListener('DOMContentLoaded', function(){
-      // Anti-clic droit
-      document.addEventListener('contextmenu', function(e){
-        e.preventDefault();
-        showNotification('Action désactivée : clic droit interdit.', 'error');
-      });
+    const prefixEl = document.getElementById('prefix');
+    const partLengthEl = document.getElementById('partLength');
+    const partsEl = document.getElementById('parts');
+    const countEl = document.getElementById('count');
+    const charsetEl = document.getElementById('charset');
+    const generateBtn = document.getElementById('generate');
+    const clearBtn = document.getElementById('clear');
+    const exportBtn = document.getElementById('export');
+    const listEl = document.getElementById('list');
 
-      const el = id => document.getElementById(id);
-      const mode = el('mode');
-      const count = el('count');
-      const lengthInput = el('length');
-      const group = el('group');
-      const upper = el('upper');
-      const lower = el('lower');
-      const digits = el('digits');
-      const symbols = el('symbols');
-      const noAmbig = el('no-ambiguous');
-      const prefix = el('prefix');
-      const output = el('output');
-      const generateBtn = el('generate');
-      const copyAllBtn = el('copyAll');
-      const downloadBtn = el('download');
-      const ttlInput = el('ttl');
-      const ttlUnit = el('ttl-unit');
-      const notification = el('notification');
+    const STORAGE_KEY = 'keygen_keys_v2';
 
-      function showNotification(msg, type='success', duration=1800) {
-        notification.textContent = msg;
-        notification.className = 'notification show ' + type;
-        setTimeout(()=>{
-          notification.className = 'notification';
-        }, duration);
+    function getCharset(type) {
+      switch (type) {
+        case 'alpha': return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        case 'numeric': return '0123456789';
+        case 'hex': return '0123456789ABCDEF';
+        default: return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       }
+    }
 
-      function secureRandomBytes(n){
-        const buf = new Uint8Array(n);
-        crypto.getRandomValues(buf);
-        return buf;
+    function randomString(length, chars) {
+      return Array.from(crypto.getRandomValues(new Uint8Array(length)))
+        .map(n => chars[n % chars.length])
+        .join('');
+    }
+
+    function makeKey(prefix, partLen, parts, chars) {
+      const segments = Array.from({ length: parts }, () => randomString(partLen, chars));
+      return prefix ? `${prefix.toUpperCase()}-${segments.join('-')}` : segments.join('-');
+    }
+
+    function loadKeys() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      } catch {
+        return [];
       }
+    }
 
-      function randomFromCharset(length, charset){
-        const out = [];
-        const bytes = secureRandomBytes(length);
-        const mapLen = charset.length;
-        for(let i=0;i<length;i++){
-          out.push(charset[bytes[i] % mapLen]);
-        }
-        return out.join('');
+    function saveKeys(keys) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(keys));
+    }
+
+    function render() {
+      const keys = loadKeys();
+      listEl.innerHTML = keys.length
+        ? keys.map(k => `
+          <div class="item">
+            <span style="word-break:break-all">${k}</span>
+            <div class="actions">
+              <button onclick="navigator.clipboard.writeText('${k}')">📋</button>
+              <button onclick="deleteKey('${k}')">🗑️</button>
+            </div>
+          </div>`).join('')
+        : '<p class="small muted">Aucune clé générée.</p>';
+    }
+
+    function deleteKey(key) {
+      const keys = loadKeys().filter(k => k !== key);
+      saveKeys(keys);
+      render();
+    }
+
+    generateBtn.addEventListener('click', () => {
+      const prefix = prefixEl.value.trim();
+      const partLen = Math.max(3, parseInt(partLengthEl.value) || 5);
+      const parts = Math.min(6, Math.max(1, parseInt(partsEl.value) || 3));
+      const count = Math.min(500, Math.max(1, parseInt(countEl.value) || 1));
+      const chars = getCharset(charsetEl.value);
+
+      const keys = loadKeys();
+      for (let i = 0; i < count; i++) {
+        keys.push(makeKey(prefix, partLen, parts, chars));
       }
-
-      function formatGroups(s, groupSize){
-        if(!groupSize) return s;
-        const parts = [];
-        for(let i=0;i<s.length;i+=groupSize) parts.push(s.slice(i,i+groupSize));
-        return parts.join('-');
-      }
-
-      function uuidv4(){
-        const b = secureRandomBytes(16);
-        b[6] = (b[6] & 0x0f) | 0x40;
-        b[8] = (b[8] & 0x3f) | 0x80;
-        const hex = [...b].map(x=>x.toString(16).padStart(2,'0')).join('');
-        return [hex.slice(0,8), hex.slice(8,12), hex.slice(12,16), hex.slice(16,20), hex.slice(20)].join('-');
-      }
-
-      function hexKey(bytesLen){
-        const b = secureRandomBytes(bytesLen);
-        return [...b].map(x=>x.toString(16).padStart(2,'0')).join('');
-      }
-
-      function buildCharset(opts){
-        let cs = '';
-        if(opts.upper) cs += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        if(opts.lower) cs += 'abcdefghijklmnopqrstuvwxyz';
-        if(opts.digits) cs += '0123456789';
-        if(opts.symbols) cs += "!@#$%^&*()[]{}<>?_-+=~";
-        if(opts.noAmbig){ cs = cs.replace(/[0OIl1]/g,''); }
-        if(!cs) cs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        return cs;
-      }
-
-      function clearOutput(){ output.innerHTML = ''; }
-
-      function appendKeyLine(encodedText, rawKey, expiryTs){
-        const div = document.createElement('div');
-        div.className = 'key';
-
-        const left = document.createElement('div');
-        left.style.display = 'flex';
-        left.style.alignItems = 'center';
-        left.style.gap = '12px';
-
-        const span = document.createElement('code');
-        span.textContent = encodedText;
-        left.appendChild(span);
-
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        const expires = document.createElement('div');
-        expires.className = 'small';
-        expires.textContent = expiryTs ? 'Opérationnel jusqu : ' + new Date(expiryTs).toLocaleString() : 'Opérationnel: illimité';
-
-        const countdown = document.createElement('div');
-        countdown.className = 'small';
-        countdown.textContent = expiryTs ? ('Temps restant: ' + Math.round((expiryTs-Date.now())/1000) + 's') : '';
-
-        meta.appendChild(expires);
-        meta.appendChild(countdown);
-
-        const right = document.createElement('div');
-        right.style.display = 'flex';
-        right.style.gap = '8px';
-        right.style.alignItems = 'center';
-
-        const copyBtn = document.createElement('button');
-        copyBtn.textContent = 'Copier';
-        copyBtn.addEventListener('click', async ()=>{
-          try {
-            await navigator.clipboard.writeText(encodedText);
-            copyBtn.textContent='✓';
-            showNotification('Clé copiée !', 'success');
-          } catch(e) {
-            copyBtn.textContent='Erreur';
-            showNotification('Erreur lors de la copie.', 'error');
-          }
-          setTimeout(()=>copyBtn.textContent='Copier',900);
-        });
-
-        right.appendChild(copyBtn);
-        div.appendChild(left);
-        div.appendChild(meta);
-        div.appendChild(right);
-        if(expiryTs) div.dataset.expiry = expiryTs;
-        div.dataset.rawKey = rawKey; // Pour download
-        output.appendChild(div);
-      }
-
-      function parseTtlToMs(value, unit){
-        value = Number(value) || 0;
-        if(unit === 'never') return null;
-        if(unit === 'minutes') return value*60*1000;
-        if(unit === 'hours') return value*3600*1000;
-        if(unit === 'days') return value*86400*1000;
-        return null;
-      }
-
-      function updateCountdowns(){
-        const items = output.querySelectorAll('.key');
-        items.forEach(item=>{
-          if(!item.dataset.expiry) return;
-          const expiry = Number(item.dataset.expiry);
-          const countdownEl = item.querySelectorAll('.small')[1];
-          if(countdownEl){
-            const diff = expiry-Date.now();
-            countdownEl.textContent = 'Temps restant: ' + (diff>0 ? Math.floor(diff/1000)+'s' : 'expirée');
-            if(diff<=0) item.style.opacity='0.5';
-          }
-        });
-      }
-
-      function validateInputs() {
-        let valid = true;
-        if (Number(count.value) < 1 || Number(count.value) > 200) {
-          showNotification('Nombre de clés invalide (1-200)', 'error');
-          valid = false;
-        }
-        if (Number(lengthInput.value) < 4 || Number(lengthInput.value) > 128) {
-          showNotification('Longueur de clé invalide (4-128)', 'error');
-          valid = false;
-        }
-        return valid;
-      }
-
-      function generate(){
-        if (!validateInputs()) return;
-        clearOutput();
-        const n = Math.min(200, Math.max(1, Number(count.value)||1));
-        const selectedMode = mode.value;
-        const pref = prefix.value || '';
-        const ttlMs = parseTtlToMs(ttlInput.value, ttlUnit.value);
-        const now = Date.now();
-
-        for(let i=0;i<n;i++){
-          let rawKey = '';
-          if(selectedMode==='uuid'){ rawKey=uuidv4(); }
-          else if(selectedMode==='hex'){ rawKey=hexKey(Math.ceil((Number(lengthInput.value)||32)/2)).slice(0,Number(lengthInput.value)||32); }
-          else{
-            const cs = buildCharset({upper:upper.checked, lower:lower.checked, digits:digits.checked, symbols:symbols.checked, noAmbig:noAmbig.checked});
-            rawKey = formatGroups(randomFromCharset(Number(lengthInput.value)||25, cs), Number(group.value)||0);
-          }
-          const fullRawKey = pref + rawKey;
-          const expiryTs = ttlMs ? now + ttlMs : null;
-          const data = {key: fullRawKey, expiry: expiryTs};
-          const encodedKey = btoa(JSON.stringify(data));
-          appendKeyLine(encodedKey, fullRawKey, expiryTs);
-        }
-        updateCountdowns();
-        setInterval(updateCountdowns,1000);
-        showNotification('Clés générées !', 'success');
-      }
-
-      generateBtn.addEventListener('click', generate);
-
-      copyAllBtn.addEventListener('click', async ()=>{
-        const texts = Array.from(output.querySelectorAll('code')).map(x=>x.textContent).join('\n');
-        try {
-          await navigator.clipboard.writeText(texts);
-          copyAllBtn.textContent='✓ Copié';
-          showNotification('Toutes les clés copiées !', 'success');
-        } catch(e) {
-          copyAllBtn.textContent='Erreur';
-          showNotification('Erreur lors de la copie.', 'error');
-        }
-        setTimeout(()=>copyAllBtn.textContent='Copier tout',900);
-      });
-
-      downloadBtn.addEventListener('click', ()=>{
-        const rows = Array.from(output.querySelectorAll('.key'));
-        const texts = rows.map(r=>r.querySelector('code').textContent + ' | clé brute: ' + r.dataset.rawKey + (r.dataset.expiry ? ' | expire le ' + new Date(Number(r.dataset.expiry)).toLocaleString() : ' | illimité')).join('\n');
-        const blob = new Blob([texts], {type:'text/plain;charset=utf-8'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download='keys.txt'; a.click(); URL.revokeObjectURL(url);
-        showNotification('Téléchargement lancé.', 'success');
-      });
-
-      mode.addEventListener('change', ()=>{
-        document.getElementById('random-options').style.display=(mode.value==='random'||mode.value==='hex')?'block':'none';
-        if(mode.value==='uuid') lengthInput.value=36;
-      });
-
-      // Validation en temps réel
-      count.addEventListener('input', ()=>{ validateInputs(); });
-      lengthInput.addEventListener('input', ()=>{ validateInputs(); });
-
-      generate();
+      saveKeys(keys);
+      render();
     });
+
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Effacer toutes les clés ?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        render();
+      }
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const keys = loadKeys();
+      if (!keys.length) return alert('Aucune clé à exporter.');
+      const csv = keys.map(k => `"${k}"`).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `keys_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // Initial render
+    render();
   </script>
 </body>
 </html>
